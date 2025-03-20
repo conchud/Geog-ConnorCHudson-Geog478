@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Fullscreen Leaflet Map with Geolocation</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""/>
+<style>
+/* Make the map and page fullscreen */
+body {
+padding: 0;
+margin: 0;
+}
+html, body, #map {
+height: 100%;
+width: 100vw;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""></script>
+<script>
+// Initialize the map and set it to fit the whole world
+var map = L.map('map').fitWorld();
+
+// Add a tile layer (using OpenStreetMap tiles)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+maxZoom: 19 // OpenStreetMap supports a max zoom of 19
+}).addTo(map);
+
+// Use geolocation to zoom to the user's location
+map.locate({setView: true, maxZoom: 16});
+
+// Event listener for successful location detection
+function onLocationFound(e) {
+var radius = e.accuracy / 2;
+
+// Add a marker for the user's location
+L.marker(e.latlng).addTo(map)
+.bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+// Add a circle showing the accuracy of the location
+L.circle(e.latlng, radius).addTo(map);
+}
+
+// Event listener for geolocation errors
+function onLocationError(e) {
+alert("Geolocation error: " + e.message);
+}
+
+// Attach the event listeners to the map
+map.on('locationfound', onLocationFound);
+map.on('locationerror', onLocationError);
+
+// Debugging: Log if the map loads tiles
+map.on('tileerror', function(e) {
+console.error("Tile loading error:", e);
+});
+
+// Debugging: Log the map's initial state and errors
+console.log("Map initialized:", map);
+</script>
+</body>
+</html>
