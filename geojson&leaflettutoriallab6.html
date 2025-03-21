@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaflet and GeoJSON Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+#map {
+height: 100vh;
+width: 100%;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Initialize the map
+const map = L.map('map').setView([39.75621, -104.99404], 5); // Centered on Denver, Colorado
+
+// Add OpenStreetMap tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+maxZoom: 19,
+attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Sample GeoJSON data
+const geojsonData = {
+"type": "FeatureCollection",
+"features": [
+{
+"type": "Feature",
+"properties": {
+"name": "Coors Field",
+"amenity": "Baseball Stadium",
+"popupContent": "This is where the Rockies play!"
+},
+"geometry": {
+"type": "Point",
+"coordinates": [-104.99404, 39.75621]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"name": "Denver Line",
+"type": "Route",
+"popupContent": "This is a sample line."
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[-105.0, 39.7],
+[-104.9, 39.8],
+[-104.8, 39.9]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"name": "Sample Polygon",
+"party": "Democrat",
+"popupContent": "polygon example in colorodo, styled by propety"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-105.05, 39.75],
+[-105.05, 39.85],
+[-104.95, 39.85],
+[-104.95, 39.75],
+[-105.05, 39.75]
+]]
+}
+}
+]
+};
+
+// Style function for GeoJSON features
+function style(feature) {
+switch (feature.properties.party) {
+case 'Democrat': return { color: "#0000ff", weight: 2 };
+case 'Republican': return { color: "#ff0000", weight: 2 };
+default: return { color: "#3388ff", weight: 2 };
+}
+}
+
+// Point to layer function (customizes Point markers)
+function pointToLayer(feature, latlng) {
+return L.circleMarker(latlng, {
+radius: 8,
+fillColor: "#ff7800",
+color: "#000",
+weight: 1,
+opacity: 1,
+fillOpacity: 0.8
+});
+}
+
+// onEachFeature function for popups
+function onEachFeature(feature, layer) {
+if (feature.properties && feature.properties.popupContent) {
+layer.bindPopup(feature.properties.popupContent);
+}
+}
+
+// Add GeoJSON layer
+L.geoJSON(geojsonData, {
+style: style, // Apply styles to polygons/lines
+pointToLayer: pointToLayer, // Customize points
+onEachFeature: onEachFeature // Add popups
+}).addTo(map);
+</script>
+</body>
+</html>
