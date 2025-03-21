@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connor Hudson Lab6 Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+#map {
+height: 600px;
+width: 100%;
+margin: 0 auto;
+}
+.info {
+padding: 6px 8px;
+font: 14px/16px Arial, Helvetica, sans-serif;
+background: white;
+background: rgba(255, 255, 255, 0.8);
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+border-radius: 5px;
+}
+.info h4 {
+margin: 0 0 5px;
+color: #777;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+var map = L.map('map').setView([30.614, -96.341], 17);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+maxZoom: 19,
+attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+var tamu = {
+"type": "FeatureCollection",
+"features": [
+{
+"type": "Feature",
+"properties": {
+"BldgAbbr": "LIBR",
+"BldgName": "Evans Library"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-96.339856, 30.616184],
+[-96.339836, 30.616198],
+[-96.338798, 30.616735],
+[-96.338589, 30.6166],
+[-96.339856, 30.616184]
+]]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"BldgAbbr": "SPEN",
+"BldgName": "Spence Hall - Dorm 1"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-96.337296, 30.61443],
+[-96.336918, 30.614013],
+[-96.33681, 30.614083],
+[-96.337296, 30.61443]
+]]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"BldgAbbr": "KIES",
+"BldgName": "Kiest Hall - Dorm 2"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-96.337793, 30.614031],
+[-96.337514, 30.613724],
+[-96.337447, 30.61365],
+[-96.337341, 30.613722],
+[-96.337793, 30.614031]
+]]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"BldgAbbr": "HARL",
+"BldgName": "Harrell Hall - Dorm 8"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-96.337008, 30.612559],
+[-96.336985, 30.612534],
+[-96.336966, 30.612548],
+[-96.337008, 30.612559]
+]]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"BldgAbbr": "VIV3",
+"BldgName": "Vivarium III"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [[
+[-96.352908, 30.614503],
+[-96.353113, 30.614324],
+[-96.352858, 30.614105],
+[-96.352908, 30.614503]
+]]
+}
+}
+]
+};
+
+function getColor() {
+return '#800000';
+}
+
+function style(feature) {
+return {
+fillColor: getColor(),
+weight: 2,
+opacity: 1,
+color: 'white',
+dashArray: '3',
+fillOpacity: 0.7
+};
+}
+
+function highlightFeature(e) {
+var layer = e.target;
+layer.setStyle({
+weight: 5,
+color: '#666',
+dashArray: '',
+fillOpacity: 0.9
+});
+layer.bringToFront();
+info.update(layer.feature.properties);
+}
+
+function resetHighlight(e) {
+geojson.resetStyle(e.target);
+info.update();
+}
+
+function zoomToFeature(e) {
+map.fitBounds(e.target.getBounds());
+}
+
+function onEachFeature(feature, layer) {
+layer.on({
+mouseover: highlightFeature,
+mouseout: resetHighlight,
+click: zoomToFeature
+});
+layer.bindPopup('<b>' + feature.properties.BldgName + '</b><br>' + feature.properties.BldgAbbr);
+}
+
+var geojson = L.geoJson(tamu, {
+style: style,
+onEachFeature: onEachFeature
+}).addTo(map);
+
+var info = L.control();
+
+info.onAdd = function (map) {
+this._div = L.DomUtil.create('div', 'info');
+this.update();
+return this._div;
+};
+
+info.update = function (props) {
+this._div.innerHTML = '<h4>BldgName and BldgAbbr</h4>' + (props ?
+'<b>' + props.BldgName + '</b><br />' + props.BldgAbbr :
+'Hover over a building');
+};
+
+info.addTo(map);
+</script>
+</body>
+</html>
