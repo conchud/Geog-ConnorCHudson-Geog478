@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>College Station Weekly Temperature Forecast - Highcharts</title> 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<style>
+#container {
+min-width: 310px;
+max-width: 800px;
+height: 400px;
+margin: 0 auto;
+}
+</style>
+</head>
+<body>
+<h1>College Station Weekly Temperature Forecast (Highcharts)</h1>
+<div id="container"></div>
+
+<script>
+Highcharts.chart("container", {
+title: {
+text: "College Station Weekly Temperature Forecast",
+},
+subtitle: {
+text: "Source: Weather Data",
+},
+yAxis: {
+title: {
+text: "Temperature (°F)",
+},
+},
+xAxis: {
+categories: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+},
+legend: {
+layout: "vertical",
+align: "right",
+verticalAlign: "middle",
+},
+series: [
+{
+name: "Highest (°F)",
+data: [82, 81, 81, 70, 77, 78, 79, 80],
+color: "steelblue",
+},
+{
+name: "Lowest (°F)",
+data: [67, 59, 50, 47, 51, 60, 66, 66],
+color: "orange",
+},
+],
+responsive: {
+rules: [
+{
+condition: {
+maxWidth: 500,
+},
+chartOptions: {
+legend: {
+layout: "horizontal",
+align: "center",
+verticalAlign: "bottom",
+},
+},
+},
+],
+},
+});
+</script>
+</body>
+</html>

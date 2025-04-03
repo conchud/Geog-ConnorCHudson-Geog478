@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Potenial College Station Weekly Temperature  - D3.js</title>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+.line {
+fill: none;
+stroke-width: 2px;
+}
+
+.highest {
+stroke: steelblue;
+}
+
+.lowest {
+stroke: orange;
+}
+
+.axis path,
+.axis line {
+fill: none;
+shape-rendering: crispEdges;
+}
+
+.axis text {
+font-size: 12px;
+}
+</style>
+</head>
+<body>
+<h2> Potenial College Station Weekly Temperature Forecast (D3.js)</h1>
+<svg width="800" height="400"></svg>
+
+<script>
+const data = [
+{ day: "Sat", high: 82, low: 67 },
+{ day: "Sun", high: 81, low: 59 },
+{ day: "Mon", high: 81, low: 50 },
+{ day: "Tue", high: 70, low: 47 },
+{ day: "Wed", high: 77, low: 51 },
+{ day: "Thu", high: 78, low: 60 },
+{ day: "Fri", high: 79, low: 66 },
+{ day: "Sat", high: 80, low: 66 },
+];
+
+const svg = d3.select("svg");
+const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+const width = +svg.attr("width") - margin.left - margin.right;
+const height = +svg.attr("height") - margin.top - margin.bottom;
+
+const g = svg
+.append("g")
+.attr("transform", `translate(${margin.left},${margin.top})`);
+
+const x = d3
+.scalePoint()
+.domain(data.map((d) => d.day))
+.range([0, width]);
+
+const y = d3
+.scaleLinear()
+.domain([40, 90]) 
+.range([height, 0]);
+
+const xAxis = d3.axisBottom(x);
+const yAxis = d3.axisLeft(y);
+
+g.append("g")
+.attr("class", "axis")
+.attr("transform", `translate(0,${height})`)
+.call(xAxis);
+
+g.append("g").attr("class", "axis").call(yAxis);
+
+const line = d3
+.line()
+.x((d) => x(d.day))
+.y((d) => y(d.high));
+
+const lineLow = d3
+.line()
+.x((d) => x(d.day))
+.y((d) => y(d.low));
+
+// High temperature line
+g.append("path")
+.datum(data)
+.attr("class", "line highest")
+.attr("d", line);
+
+// Low temperature line
+g.append("path")
+.datum(data)
+.attr("class", "line lowest")
+.attr("d", lineLow);
+
+// Add labels for data points
+g.selectAll(".dot-high")
+.data(data)
+.enter()
+.append("circle")
+.attr("class", "dot-high")
+.attr("cx", (d) => x(d.day))
+.attr("cy", (d) => y(d.high))
+.attr("r", 4)
+.attr("fill", "steelblue");
+
+g.selectAll(".dot-low")
+.data(data)
+.enter()
+.append("circle")
+.attr("class", "dot-low")
+.attr("cx", (d) => x(d.day))
+.attr("cy", (d) => y(d.low))
+.attr("r", 4)
+.attr("fill", "orange");
+</script>
+</body>
+</html>

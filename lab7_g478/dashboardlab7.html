@@ -1,0 +1,220 @@
+!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>College Station Weekly Temperature Dashboard</title>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 24px;
+    color: #444;
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.chart-container h2 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+svg {
+    width: 100%;
+    height: 350px;
+}
+
+#container {
+    min-width: 100%;
+    height: 350px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+<h1>College Station Weekly Temperature Forecast Dashboard</h1>
+
+<div class="dashboard-container">
+<!-- D3.js Chart -->
+<div class="chart-container">
+<h2>D3.js Visualization</h2>
+<svg></svg>
+</div>
+
+<!-- Highcharts Chart -->
+<div class="chart-container">
+<h2>Highcharts Visualization</h2>
+<div id="container"></div>
+</div>
+</div>
+
+<script>
+// D3.js Visualization
+const d3Data = [
+{ day: "Sat", high: 82, low: 67 },
+{ day: "Sun", high: 81, low: 59 },
+{ day: "Mon", high: 81, low: 50 },
+{ day: "Tue", high: 70, low: 47 },
+{ day: "Wed", high: 77, low: 51 },
+{ day: "Thu", high: 78, low: 60 },
+{ day: "Fri", high: 79, low: 66 },
+{ day: "Sat", high: 80, low: 66 },
+];
+
+    const svg = d3.select("svg");
+    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
+    const height = 350 - margin.top - margin.bottom;
+
+    const g = svg
+.append("g")
+.attr("transform", `translate(${margin.left},${margin.top})`);
+
+const x = d3
+.scalePoint()
+.domain(d3Data.map((d) => d.day))
+.range([0, width]);
+
+const y = d3
+.scaleLinear()
+.domain([40, 90]) // Temperature range
+.range([height, 0]);
+
+const xAxis = d3.axisBottom(x);
+const yAxis = d3.axisLeft(y);
+
+g.append("g")
+.attr("class", "axis")
+.attr("transform", `translate(0,${height})`)
+.call(xAxis);
+
+g.append("g").attr("class", "axis").call(yAxis);
+
+const lineHigh = d3
+.line()
+.x((d) => x(d.day))
+.y((d) => y(d.high));
+
+const lineLow = d3
+.line()
+.x((d) => x(d.day))
+.y((d) => y(d.low));
+
+g.append("path")
+    .datum(d3Data)
+    .attr("class", "line")
+    .attr("d", lineHigh)
+    .style("stroke", "steelblue")
+    .style("fill", "none")
+    .style("stroke-width", 2);
+
+g.append("path")
+    .datum(d3Data)
+    .attr("class", "line")
+    .attr("d", lineLow)
+    .style("stroke", "orange")
+    .style("fill", "none")
+    .style("stroke-width", 2);
+
+g.selectAll(".dot-high")
+    .data(d3Data)
+    .enter()
+    .append("circle")
+    .attr("cx", (d) => x(d.day))
+    .attr("cy", (d) => y(d.high))
+    .attr("r", 4)
+    .attr("fill", "steelblue");
+
+g.selectAll(".dot-low")
+    .data(d3Data)
+    .enter()
+    .append("circle")
+    .attr("cx", (d) => x(d.day))
+    .attr("cy", (d) => y(d.low))
+    .attr("r", 4)
+    .attr("fill", "orange");
+
+// Highcharts Visualization
+Highcharts.chart("container", 
+    {
+    title: {text: "College Station Weekly Temperature Forecast",
+},
+    subtitle: {text: "Source: Weather Data",
+},
+yAxis: {title: {text: "Temperature (°F)",
+},
+},
+xAxis: {categories: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+},
+legend: {
+layout: "vertical",
+align: "right",
+verticalAlign: "middle",
+},
+series: [
+{
+        name: "Highest (°F)",
+        data: [82, 81, 81, 70, 77, 78, 79, 80],
+        color: "steelblue",
+},
+{
+        name: "Lowest (°F)",
+        data: [67, 59, 50, 47, 51, 60, 66, 66],
+        color: "orange",
+},
+],
+responsive: {
+            rules: [
+                        {
+                    condition: {
+                        maxWidth: 500,
+                    },
+                    chartOptions: {
+                            legend: {
+                            layout: "horizontal",
+                            align: "center",
+                            verticalAlign: "bottom",
+                                    },
+                                },
+                        },
+                    ],
+            },
+    }   
+);
+</script>
+</body>
+</html>
