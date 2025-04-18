@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Esri ArcGIS JS Web Map with FeatureLayer</title>
+    <title>My recent courses on East Campus</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.6/esri/css/main.css">
     <script src="https://js.arcgis.com/4.6/"></script>
     <style>
@@ -13,19 +13,34 @@
         width: 100%;
         overflow: hidden;
       }
+      #titleDiv {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255,255,255,0.9);
+        text-align: center;
+        padding: 18px 0 10px 0;
+        z-index: 2;
+        font-size: 2em;
+        font-weight: 600;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
       #viewDiv {
         position: absolute;
+        top: 56px; /* height of titleDiv + some spacing */
         right: 0;
         left: 0;
-        top: 0;
         bottom: 0;
       }
     </style>
   </head>
   <body>
-
+    <!-- Title at the top center -->
+    <div id="titleDiv">My recent courses on East Campus</div>
+    <!-- Map container -->
     <div id="viewDiv"></div>
-    
     <script>
       require([
         "esri/Map",
@@ -34,12 +49,10 @@
         "dojo/domReady!"
       ], function(Map, MapView, FeatureLayer) {
 
-        
         var map = new Map({
           basemap: "streets"
         });
 
-       
         var view = new MapView({
           container: "viewDiv",
           map: map,
@@ -47,7 +60,6 @@
           zoom: 13
         });
 
-       
         var popupTemplate = {
           title: "{Connor's recnet course locations}",
           actions: [{
@@ -63,7 +75,6 @@
           }]
         };
 
-        
         var featureLayer = new FeatureLayer({
           url: "https://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/testing1111/FeatureServer/0",
           popupTemplate: popupTemplate
