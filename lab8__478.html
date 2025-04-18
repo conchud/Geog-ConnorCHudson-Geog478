@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Esri ArcGIS JS Web Map with FeatureLayer</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.6/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.6/"></script>
+    <style>
+      html, body {
+        font-family: sans-serif;
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+      #viewDiv {
+        position: absolute;
+        right: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="viewDiv"></div>
+    
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "dojo/domReady!"
+      ], function(Map, MapView, FeatureLayer) {
+
+        
+        var map = new Map({
+          basemap: "streets"
+        });
+
+       
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-96.339469, 30.617492],
+          zoom: 13
+        });
+
+       
+        var popupTemplate = {
+          title: "{Name}",
+          actions: [{
+            id: "find",
+            title: "Find More Info"
+          }],
+          content: [{
+            type: "fields",
+            fieldInfos: [
+              { fieldName: "Name", label: "Name" },
+              { fieldName: "Abbr", label: "Abbreviation" }
+            ]
+          }]
+        };
+
+        
+        var featureLayer = new FeatureLayer({
+          url: "https://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/testing1111/FeatureServer/0",
+          popupTemplate: popupTemplate
+        });
+
+        map.add(featureLayer);
+
+        view.popup.on("trigger-action", function(event) {
+          if (event.action.id === "find") {
+            alert("Custom action triggered for: " + view.popup.title);
+          }
+        });
+
+      });
+    </script>
+  </body>
+</html>
